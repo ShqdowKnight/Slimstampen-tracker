@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ClassPulse – Teacher Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #08090c;
+      --surface: #10121a;
+      --surface2: #181b26;
+      --border: #ffffff0f;
+      --accent: #7c6aff;
+      --accent2: #4ade80;
+      --danger: #f87171;
+      --text: #e8eaf0;
+      --muted: #ffffff45;
+      --mono: 'IBM Plex Mono', monospace;
+      --sans: 'Syne', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+    }
+
+    /* ─── NOISE TEXTURE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── LOGIN SCREEN ─── */
+    #loginScreen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    #loginScreen::before {
+      content: '';
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #7c6aff15 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .login-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px 40px;
+      width: 100%; max-width: 420px;
+      position: relative;
+    }
+
+    .brand {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -1px;
+      margin-bottom: 6px;
+    }
+
+    .brand span { color: var(--accent); }
+
+    .brand-sub {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 36px;
+    }
+
+    .field { margin-bottom: 18px; }
+    .field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 13px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .field input:focus { border-color: var(--accent); }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--accent);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .login-btn:hover { background: #6a57f0; }
+    .login-btn:active { transform: scale(0.98); }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 12px;
+      text-align: center;
+      display: none;
+    }
+
+    /* ─── DASHBOARD ─── */
+    #dashboard { display: none; position: relative; z-index: 1; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0;
+      z-index: 10;
+      backdrop-filter: blur(8px);
+    }
+
+    .topbar-brand {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .topbar-brand span { color: var(--accent); }
+
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+
+    .class-badge {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--accent);
+      background: #7c6aff18;
+      border: 1px solid #7c6aff30;
+      border-radius: 6px;
+      padding: 5px 10px;
+    }
+
+    .logout-btn {
+      font-family: var(--sans);
+      font-size: 13px;
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 14px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .logout-btn:hover { color: var(--text); border-color: #ffffff25; }
+
+    /* ─── MAIN CONTENT ─── */
+    .main { padding: 32px; max-width: 1100px; margin: 0 auto; }
+
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .page-title { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
+    .page-title small {
+      display: block;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--muted);
+      letter-spacing: 0;
+      margin-bottom: 4px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      position: relative;
+    }
+
+    .search-box input {
+      padding: 10px 16px 10px 38px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      width: 240px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-box input:focus { border-color: #ffffff25; }
+    .search-box input::placeholder { color: var(--muted); }
+
+    .search-icon {
+      position: absolute;
+      left: 12px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 15px;
+      pointer-events: none;
+    }
+
+    .class-select {
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 14px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .refresh-btn {
+      padding: 10px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .refresh-btn:hover { color: var(--text); border-color: #ffffff25; }
+
+    /* ─── STATS ROW ─── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-family: var(--mono);
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .stat-value.green { color: var(--accent2); }
+    .stat-value.purple { color: var(--accent); }
+
+    /* ─── STUDENT TABLE ─── */
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead tr {
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      text-align: left;
+      padding: 14px 20px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    th.right { text-align: right; }
+
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #ffffff04; }
+
+    td {
+      padding: 15px 20px;
+      font-size: 14px;
+    }
+
+    .rank {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
+      min-width: 30px;
+    }
+
+    .rank.top { color: var(--accent); font-weight: 600; }
+
+    .student-name { font-weight: 600; font-size: 15px; }
+
+    .student-id {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .score-cell { text-align: right; }
+
+    .score-num {
+      font-family: var(--mono);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--accent2);
+    }
+
+    .score-bar-wrap {
+      width: 120px;
+      height: 5px;
+      background: #ffffff0a;
+      border-radius: 99px;
+      margin-top: 6px;
+      margin-left: auto;
+      overflow: hidden;
+    }
+
+    .score-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent2), #86efac);
+      border-radius: 99px;
+      transition: width 0.4s ease;
+    }
+
+    .last-seen {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 99px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .status-pill.online {
+      background: #4ade8018;
+      color: var(--accent2);
+      border: 1px solid #4ade8030;
+    }
+
+    .status-pill.offline {
+      background: #ffffff08;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .online .status-dot { animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state .icon { font-size: 40px; margin-bottom: 14px; }
+    .empty-state p { font-size: 15px; }
+
+    .live-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--accent2);
+      background: #4ade8012;
+      border: 1px solid #4ade8025;
+      border-radius: 99px;
+      padding: 4px 10px;
+    }
+
+    .live-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent2);
+      animation: pulse 1.5s infinite;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── LOGIN ─── -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="brand">Class<span>Pulse</span></div>
+    <div class="brand-sub">Teacher Dashboard · Sign In</div>
+
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="emailInput" placeholder="teacher@school.be" />
+    </div>
+
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="passwordInput" placeholder="••••••••" />
+    </div>
+
+    <button class="login-btn" id="loginBtn">Sign In</button>
+    <div class="error-msg" id="errorMsg"></div>
+  </div>
+</div>
+
+<!-- ─── DASHBOARD ─── -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="topbar-brand">Class<span>Pulse</span></div>
+    <div class="topbar-right">
+      <div class="live-badge"><div class="live-dot"></div> Live</div>
+      <div class="class-badge" id="topbarEmail">–</div>
+      <button class="logout-btn" id="logoutBtn">Sign out</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="page-header">
+      <div class="page-title">
+        <small>Today's Engagement</small>
+        Student Leaderboard
+      </div>
+      <div class="controls">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Search student..." />
+        </div>
+        <select class="class-select" id="classFilter">
+          <option value="">All classes</option>
+        </select>
+        <button class="refresh-btn" id="refreshBtn">↻ Refresh</button>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Students today</div>
+        <div class="stat-value purple" id="statTotal">–</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Active now (5 min)</div>
+        <div class="stat-value green" id="statActive">–</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Top score today</div>
+        <div class="stat-value" id="statTop">–</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg score</div>
+        <div class="stat-value" id="statAvg">–</div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Student</th>
+            <th>Class</th>
+            <th>Status</th>
+            <th>Last seen</th>
+            <th class="right">Score today</th>
+          </tr>
+        </thead>
+        <tbody id="studentTable">
+          <tr>
+            <td colspan="6">
+              <div class="empty-state">
+                <div class="icon">📡</div>
+                <p>Loading student data…</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────
+const SUPABASE_URL = 'https://debrjjsbsfznrbauloai.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlYnJqanNic2Z6bnJiYXVsb2FpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MTY5NzYsImV4cCI6MjA5NDE5Mjk3Nn0.1PT5yEpCdkoxxigPsXb5m8VZ1mWQFe67dZzptpoxCzE';
+
+// ─── INIT SUPABASE ────────────────────────────────────────
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let allStudents = [];
+let currentSession = null;
+
+// ─── AUTH ─────────────────────────────────────────────────
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const email = document.getElementById('emailInput').value.trim();
+  const password = document.getElementById('passwordInput').value;
+  const errEl = document.getElementById('errorMsg');
+  errEl.style.display = 'none';
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) {
+    errEl.textContent = error.message;
+    errEl.style.display = 'block';
+    return;
+  }
+  showDashboard(data.session);
+});
+
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await sb.auth.signOut();
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+  currentSession = null;
+});
+
+// Check existing session on load
+sb.auth.getSession().then(({ data }) => {
+  if (data.session) showDashboard(data.session);
+});
+
+function showDashboard(session) {
+  currentSession = session;
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('topbarEmail').textContent = session.user.email;
+  loadStudents();
+  // Auto-refresh every 30s
+  setInterval(loadStudents, 30000);
+}
+
+// ─── LOAD DATA ────────────────────────────────────────────
+async function loadStudents() {
+  const today = new Date().toISOString().split('T')[0];
+
+  const { data, error } = await sb
+    .from('activity_ticks')
+    .select('student_id, student_name, class_code, active, recorded_at')
+    .gte('recorded_at', today + 'T00:00:00Z')
+    .eq('active', true);
+
+  if (error) {
+    console.error('Error loading:', error);
+    return;
+  }
+
+  // Aggregate scores per student
+  const map = {};
+  data.forEach(tick => {
+    const key = tick.student_id;
+    if (!map[key]) {
+      map[key] = {
+        student_id: tick.student_id,
+        student_name: tick.student_name,
+        class_code: tick.class_code,
+        score: 0,
+        last_seen: null
+      };
+    }
+    map[key].score++;
+    const t = new Date(tick.recorded_at);
+    if (!map[key].last_seen || t > new Date(map[key].last_seen)) {
+      map[key].last_seen = tick.recorded_at;
+    }
+  });
+
+  allStudents = Object.values(map).sort((a, b) => b.score - a.score);
+
+  // Populate class filter
+  const classes = [...new Set(allStudents.map(s => s.class_code))].sort();
+  const classFilter = document.getElementById('classFilter');
+  const current = classFilter.value;
+  classFilter.innerHTML = '<option value="">All classes</option>';
+  classes.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    if (c === current) opt.selected = true;
+    classFilter.appendChild(opt);
+  });
+
+  renderTable();
+  updateStats();
+}
+
+// ─── RENDER TABLE ─────────────────────────────────────────
+function renderTable() {
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const classFilter = document.getElementById('classFilter').value;
+  const maxScore = allStudents.length > 0 ? allStudents[0].score : 1;
+  const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
+
+  let filtered = allStudents.filter(s => {
+    const matchSearch = !search ||
+      s.student_name.toLowerCase().includes(search) ||
+      s.student_id.toLowerCase().includes(search);
+    const matchClass = !classFilter || s.class_code === classFilter;
+    return matchSearch && matchClass;
+  });
+
+  const tbody = document.getElementById('studentTable');
+
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6">
+      <div class="empty-state">
+        <div class="icon">🔍</div>
+        <p>No students found</p>
+      </div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map((s, i) => {
+    const pct = Math.round((s.score / maxScore) * 100);
+    const isOnline = s.last_seen && new Date(s.last_seen) > fiveMinAgo;
+    const lastSeenStr = s.last_seen ? timeAgo(new Date(s.last_seen)) : 'never';
+    const rankClass = i < 3 ? 'top' : '';
+
+    return `
+      <tr>
+        <td><div class="rank ${rankClass}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1)}</div></td>
+        <td>
+          <div class="student-name">${escHtml(s.student_name)}</div>
+          <div class="student-id">${escHtml(s.student_id)}</div>
+        </td>
+        <td><span style="font-family:var(--mono);font-size:12px;color:var(--accent)">${escHtml(s.class_code)}</span></td>
+        <td>
+          <span class="status-pill ${isOnline ? 'online' : 'offline'}">
+            <span class="status-dot"></span>
+            ${isOnline ? 'Active' : 'Offline'}
+          </span>
+        </td>
+        <td><div class="last-seen">${lastSeenStr}</div></td>
+        <td class="score-cell">
+          <div class="score-num">${s.score}</div>
+          <div class="score-bar-wrap">
+            <div class="score-bar" style="width:${pct}%"></div>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+}
+
+// ─── STATS ────────────────────────────────────────────────
+function updateStats() {
+  const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
+  const activeNow = allStudents.filter(s =>
+    s.last_seen && new Date(s.last_seen) > fiveMinAgo
+  ).length;
+  const scores = allStudents.map(s => s.score);
+  const avg = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+
+  document.getElementById('statTotal').textContent = allStudents.length;
+  document.getElementById('statActive').textContent = activeNow;
+  document.getElementById('statTop').textContent = scores[0] ?? 0;
+  document.getElementById('statAvg').textContent = avg;
+}
+
+// ─── HELPERS ──────────────────────────────────────────────
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function timeAgo(date) {
+  const diff = Math.floor((Date.now() - date) / 1000);
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+  return `${Math.floor(diff/3600)}h ago`;
+}
+
+// ─── EVENTS ───────────────────────────────────────────────
+document.getElementById('searchInput').addEventListener('input', renderTable);
+document.getElementById('classFilter').addEventListener('change', renderTable);
+document.getElementById('refreshBtn').addEventListener('click', () => {
+  document.getElementById('refreshBtn').textContent = '↻ Loading…';
+  loadStudents().finally(() => {
+    document.getElementById('refreshBtn').textContent = '↻ Refresh';
+  });
+});
+
+// Enter key on login
+document.getElementById('passwordInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+</script>
+</body>
+</html>
