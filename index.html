@@ -32,7 +32,6 @@
       min-height: 100vh;
     }
 
-    /* ─── NOISE TEXTURE OVERLAY ─── */
     body::before {
       content: '';
       position: fixed;
@@ -42,7 +41,7 @@
       z-index: 0;
     }
 
-    /* ─── LOGIN SCREEN ─── */
+    /* ─── LOGIN ─── */
     #loginScreen {
       display: flex;
       align-items: center;
@@ -69,19 +68,10 @@
       border-radius: 20px;
       padding: 48px 40px;
       width: 100%; max-width: 420px;
-      position: relative;
     }
 
-    .brand {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--text);
-      letter-spacing: -1px;
-      margin-bottom: 6px;
-    }
-
+    .brand { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 6px; }
     .brand span { color: var(--accent); }
-
     .brand-sub {
       font-family: var(--mono);
       font-size: 11px;
@@ -101,7 +91,6 @@
       letter-spacing: 1px;
       margin-bottom: 8px;
     }
-
     .field input {
       width: 100%;
       padding: 13px 16px;
@@ -114,7 +103,6 @@
       outline: none;
       transition: border-color 0.2s;
     }
-
     .field input:focus { border-color: var(--accent); }
 
     .login-btn {
@@ -131,7 +119,6 @@
       margin-top: 8px;
       transition: background 0.2s, transform 0.1s;
     }
-
     .login-btn:hover { background: #6a57f0; }
     .login-btn:active { transform: scale(0.98); }
 
@@ -158,14 +145,8 @@
       backdrop-filter: blur(8px);
     }
 
-    .topbar-brand {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-    }
-
+    .topbar-brand { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
     .topbar-brand span { color: var(--accent); }
-
     .topbar-right { display: flex; align-items: center; gap: 16px; }
 
     .class-badge {
@@ -189,10 +170,8 @@
       cursor: pointer;
       transition: color 0.2s, border-color 0.2s;
     }
-
     .logout-btn:hover { color: var(--text); border-color: #ffffff25; }
 
-    /* ─── MAIN CONTENT ─── */
     .main { padding: 32px; max-width: 1100px; margin: 0 auto; }
 
     .page-header {
@@ -214,17 +193,9 @@
       margin-bottom: 4px;
     }
 
-    .controls {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
+    .controls { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
 
-    .search-box {
-      position: relative;
-    }
-
+    .search-box { position: relative; }
     .search-box input {
       padding: 10px 16px 10px 38px;
       background: var(--surface);
@@ -237,10 +208,8 @@
       outline: none;
       transition: border-color 0.2s;
     }
-
     .search-box input:focus { border-color: #ffffff25; }
     .search-box input::placeholder { color: var(--muted); }
-
     .search-icon {
       position: absolute;
       left: 12px; top: 50%;
@@ -262,6 +231,51 @@
       cursor: pointer;
     }
 
+    /* Date range controls */
+    .date-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .date-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .date-input {
+      padding: 10px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .date-input:focus { border-color: var(--accent); }
+
+    .range-btn {
+      padding: 10px 14px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .range-btn:hover, .range-btn.active { color: var(--accent); border-color: #7c6aff40; background: #7c6aff10; }
+
     .refresh-btn {
       padding: 10px 16px;
       background: transparent;
@@ -274,10 +288,9 @@
       transition: all 0.2s;
       white-space: nowrap;
     }
-
     .refresh-btn:hover { color: var(--text); border-color: #ffffff25; }
 
-    /* ─── STATS ROW ─── */
+    /* ─── STATS ─── */
     .stats-row {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -307,11 +320,10 @@
       font-weight: 600;
       color: var(--text);
     }
-
     .stat-value.green { color: var(--accent2); }
     .stat-value.purple { color: var(--accent); }
 
-    /* ─── STUDENT TABLE ─── */
+    /* ─── TABLE ─── */
     .table-wrap {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -319,10 +331,7 @@
       overflow: hidden;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
+    table { width: 100%; border-collapse: collapse; }
 
     thead tr {
       background: var(--surface2);
@@ -338,22 +347,22 @@
       text-transform: uppercase;
       letter-spacing: 1px;
       white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s;
     }
-
+    th:hover { color: var(--text); }
     th.right { text-align: right; }
+    th.sorted { color: var(--accent); }
 
     tbody tr {
       border-bottom: 1px solid var(--border);
       transition: background 0.15s;
     }
-
     tbody tr:last-child { border-bottom: none; }
     tbody tr:hover { background: #ffffff04; }
 
-    td {
-      padding: 15px 20px;
-      font-size: 14px;
-    }
+    td { padding: 15px 20px; font-size: 14px; }
 
     .rank {
       font-family: var(--mono);
@@ -361,28 +370,26 @@
       color: var(--muted);
       min-width: 30px;
     }
-
     .rank.top { color: var(--accent); font-weight: 600; }
 
     .student-name { font-weight: 600; font-size: 15px; }
+    .student-id { font-family: var(--mono); font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-    .student-id {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-
-    .score-cell { text-align: right; }
-
-    .score-num {
+    .time-cell { text-align: right; }
+    .time-num {
       font-family: var(--mono);
       font-size: 18px;
       font-weight: 600;
       color: var(--accent2);
     }
+    .time-sub {
+      font-family: var(--mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 2px;
+    }
 
-    .score-bar-wrap {
+    .bar-wrap {
       width: 120px;
       height: 5px;
       background: #ffffff0a;
@@ -391,19 +398,14 @@
       margin-left: auto;
       overflow: hidden;
     }
-
-    .score-bar {
+    .bar {
       height: 100%;
       background: linear-gradient(90deg, var(--accent2), #86efac);
       border-radius: 99px;
       transition: width 0.4s ease;
     }
 
-    .last-seen {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--muted);
-    }
+    .last-seen { font-family: var(--mono); font-size: 11px; color: var(--muted); }
 
     .status-pill {
       display: inline-flex;
@@ -414,34 +416,14 @@
       font-size: 11px;
       font-weight: 600;
     }
-
-    .status-pill.online {
-      background: #4ade8018;
-      color: var(--accent2);
-      border: 1px solid #4ade8030;
-    }
-
-    .status-pill.offline {
-      background: #ffffff08;
-      color: var(--muted);
-      border: 1px solid var(--border);
-    }
-
-    .status-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: currentColor;
-    }
-
+    .status-pill.online { background: #4ade8018; color: var(--accent2); border: 1px solid #4ade8030; }
+    .status-pill.offline { background: #ffffff08; color: var(--muted); border: 1px solid var(--border); }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
     .online .status-dot { animation: pulse 2s infinite; }
+
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--muted);
-    }
-
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
     .empty-state .icon { font-size: 40px; margin-bottom: 14px; }
     .empty-state p { font-size: 15px; }
 
@@ -457,12 +439,17 @@
       border-radius: 99px;
       padding: 4px 10px;
     }
-
     .live-dot {
       width: 6px; height: 6px;
       border-radius: 50%;
       background: var(--accent2);
       animation: pulse 1.5s infinite;
+    }
+
+    .ticks-col {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--muted);
     }
   </style>
 </head>
@@ -473,17 +460,14 @@
   <div class="login-card">
     <div class="brand">Class<span>Pulse</span></div>
     <div class="brand-sub">Teacher Dashboard · Sign In</div>
-
     <div class="field">
       <label>Email</label>
       <input type="email" id="emailInput" placeholder="teacher@school.be" />
     </div>
-
     <div class="field">
       <label>Password</label>
       <input type="password" id="passwordInput" placeholder="••••••••" />
     </div>
-
     <button class="login-btn" id="loginBtn">Sign In</button>
     <div class="error-msg" id="errorMsg"></div>
   </div>
@@ -503,7 +487,7 @@
   <div class="main">
     <div class="page-header">
       <div class="page-title">
-        <small>Today's Engagement</small>
+        <small>Engagement Tracker</small>
         Student Leaderboard
       </div>
       <div class="controls">
@@ -514,13 +498,25 @@
         <select class="class-select" id="classFilter">
           <option value="">All classes</option>
         </select>
-        <button class="refresh-btn" id="refreshBtn">↻ Refresh</button>
       </div>
+    </div>
+
+    <!-- Date range row -->
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:20px;flex-wrap:wrap;">
+      <span class="date-label">Range:</span>
+      <button class="range-btn active" id="btnToday" onclick="setRange('today')">Today</button>
+      <button class="range-btn" id="btnWeek" onclick="setRange('week')">This week</button>
+      <button class="range-btn" id="btnAll" onclick="setRange('all')">All time</button>
+      <span class="date-label" style="margin-left:8px;">From:</span>
+      <input type="date" class="date-input" id="dateFrom" />
+      <span class="date-label">To:</span>
+      <input type="date" class="date-input" id="dateTo" />
+      <button class="refresh-btn" id="refreshBtn">↻ Refresh</button>
     </div>
 
     <div class="stats-row">
       <div class="stat-card">
-        <div class="stat-label">Students today</div>
+        <div class="stat-label">Students tracked</div>
         <div class="stat-value purple" id="statTotal">–</div>
       </div>
       <div class="stat-card">
@@ -528,11 +524,11 @@
         <div class="stat-value green" id="statActive">–</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Top score today</div>
+        <div class="stat-label">Top active time</div>
         <div class="stat-value" id="statTop">–</div>
       </div>
       <div class="stat-card">
-        <div class="stat-label">Avg score</div>
+        <div class="stat-label">Avg active time</div>
         <div class="stat-value" id="statAvg">–</div>
       </div>
     </div>
@@ -545,19 +541,18 @@
             <th>Student</th>
             <th>Class</th>
             <th>Status</th>
-            <th>Last seen</th>
-            <th class="right">Score today</th>
+            <th onclick="sortBy('last_seen')">Last seen</th>
+            <th onclick="sortBy('active_seconds')" class="right sorted" id="th_active_seconds">Active time ↓</th>
+            <th class="right">Total ticks</th>
           </tr>
         </thead>
         <tbody id="studentTable">
-          <tr>
-            <td colspan="6">
-              <div class="empty-state">
-                <div class="icon">📡</div>
-                <p>Loading student data…</p>
-              </div>
-            </td>
-          </tr>
+          <tr><td colspan="7">
+            <div class="empty-state">
+              <div class="icon">📡</div>
+              <p>Loading student data…</p>
+            </div>
+          </td></tr>
         </tbody>
       </table>
     </div>
@@ -565,16 +560,45 @@
 </div>
 
 <script>
-// ─── CONFIG ───────────────────────────────────────────────
 const SUPABASE_URL = 'https://debrjjsbsfznrbauloai.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlYnJqanNic2Z6bnJiYXVsb2FpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg2MTY5NzYsImV4cCI6MjA5NDE5Mjk3Nn0.1PT5yEpCdkoxxigPsXb5m8VZ1mWQFe67dZzptpoxCzE';
 
-// ─── INIT SUPABASE ────────────────────────────────────────
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const TICK_SECONDS = 10; // each active tick = 10 seconds
+
 let allStudents = [];
-let currentSession = null;
+let sortKey = 'active_seconds';
+let sortDir = -1; // -1 = desc
+
+// ─── DATE RANGE ───────────────────────────────────────────
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+function setRange(range) {
+  document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+  const now = new Date();
+  if (range === 'today') {
+    document.getElementById('btnToday').classList.add('active');
+    document.getElementById('dateFrom').value = todayStr();
+    document.getElementById('dateTo').value = todayStr();
+  } else if (range === 'week') {
+    document.getElementById('btnWeek').classList.add('active');
+    const mon = new Date(now);
+    mon.setDate(now.getDate() - now.getDay() + 1);
+    document.getElementById('dateFrom').value = mon.toISOString().split('T')[0];
+    document.getElementById('dateTo').value = todayStr();
+  } else {
+    document.getElementById('btnAll').classList.add('active');
+    document.getElementById('dateFrom').value = '2020-01-01';
+    document.getElementById('dateTo').value = todayStr();
+  }
+  loadStudents();
+}
+
+// Init dates to today
+document.getElementById('dateFrom').value = todayStr();
+document.getElementById('dateTo').value = todayStr();
 
 // ─── AUTH ─────────────────────────────────────────────────
 document.getElementById('loginBtn').addEventListener('click', async () => {
@@ -584,11 +608,7 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
   errEl.style.display = 'none';
 
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if (error) {
-    errEl.textContent = error.message;
-    errEl.style.display = 'block';
-    return;
-  }
+  if (error) { errEl.textContent = error.message; errEl.style.display = 'block'; return; }
   showDashboard(data.session);
 });
 
@@ -596,40 +616,37 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
   await sb.auth.signOut();
   document.getElementById('dashboard').style.display = 'none';
   document.getElementById('loginScreen').style.display = 'flex';
-  currentSession = null;
 });
 
-// Check existing session on load
 sb.auth.getSession().then(({ data }) => {
   if (data.session) showDashboard(data.session);
 });
 
 function showDashboard(session) {
-  currentSession = session;
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
   document.getElementById('topbarEmail').textContent = session.user.email;
   loadStudents();
-  // Auto-refresh every 30s
   setInterval(loadStudents, 30000);
 }
 
 // ─── LOAD DATA ────────────────────────────────────────────
 async function loadStudents() {
-  const today = new Date().toISOString().split('T')[0];
+  const from = document.getElementById('dateFrom').value;
+  const to = document.getElementById('dateTo').value;
 
-  const { data, error } = await sb
+  // Fetch ALL ticks in the date range (active or not — we count active ones below)
+  let query = sb
     .from('activity_ticks')
-    .select('student_id, student_name, class_code, active, recorded_at')
-    .gte('recorded_at', today + 'T00:00:00Z')
-    .eq('active', true);
+    .select('student_id, student_name, class_code, active, had_keypress, recorded_at')
+    .gte('recorded_at', from + 'T00:00:00Z')
+    .lte('recorded_at', to + 'T23:59:59Z');
 
-  if (error) {
-    console.error('Error loading:', error);
-    return;
-  }
+  const { data, error } = await query;
 
-  // Aggregate scores per student
+  if (error) { console.error('Error loading:', error); return; }
+
+  // Aggregate per student
   const map = {};
   data.forEach(tick => {
     const key = tick.student_id;
@@ -638,18 +655,25 @@ async function loadStudents() {
         student_id: tick.student_id,
         student_name: tick.student_name,
         class_code: tick.class_code,
-        score: 0,
+        active_ticks: 0,   // ticks where active=true
+        total_ticks: 0,    // all ticks
         last_seen: null
       };
     }
-    map[key].score++;
+    map[key].total_ticks++;
+    if (tick.active) map[key].active_ticks++;
+
     const t = new Date(tick.recorded_at);
     if (!map[key].last_seen || t > new Date(map[key].last_seen)) {
       map[key].last_seen = tick.recorded_at;
     }
   });
 
-  allStudents = Object.values(map).sort((a, b) => b.score - a.score);
+  // Convert active ticks → seconds → minutes
+  allStudents = Object.values(map).map(s => ({
+    ...s,
+    active_seconds: s.active_ticks * TICK_SECONDS
+  }));
 
   // Populate class filter
   const classes = [...new Set(allStudents.map(s => s.class_code))].sort();
@@ -667,11 +691,33 @@ async function loadStudents() {
   updateStats();
 }
 
-// ─── RENDER TABLE ─────────────────────────────────────────
+// ─── FORMAT TIME ──────────────────────────────────────────
+function formatTime(seconds) {
+  if (seconds < 60) return `${seconds}s`;
+  if (seconds < 3600) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return s > 0 ? `${m}m ${s}s` : `${m}m`;
+  }
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+}
+
+// ─── SORT ─────────────────────────────────────────────────
+function sortBy(key) {
+  if (sortKey === key) { sortDir *= -1; }
+  else { sortKey = key; sortDir = -1; }
+  document.querySelectorAll('th').forEach(th => th.classList.remove('sorted'));
+  const el = document.getElementById('th_' + key);
+  if (el) el.classList.add('sorted');
+  renderTable();
+}
+
+// ─── RENDER ───────────────────────────────────────────────
 function renderTable() {
   const search = document.getElementById('searchInput').value.toLowerCase();
   const classFilter = document.getElementById('classFilter').value;
-  const maxScore = allStudents.length > 0 ? allStudents[0].score : 1;
   const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
 
   let filtered = allStudents.filter(s => {
@@ -682,26 +728,35 @@ function renderTable() {
     return matchSearch && matchClass;
   });
 
+  // Sort
+  filtered.sort((a, b) => {
+    let av = a[sortKey], bv = b[sortKey];
+    if (sortKey === 'last_seen') { av = av ? new Date(av).getTime() : 0; bv = bv ? new Date(bv).getTime() : 0; }
+    return sortDir * (bv - av);
+  });
+
+  const maxSeconds = filtered.length > 0 ? Math.max(...filtered.map(s => s.active_seconds), 1) : 1;
   const tbody = document.getElementById('studentTable');
 
   if (filtered.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6">
+    tbody.innerHTML = `<tr><td colspan="7">
       <div class="empty-state">
         <div class="icon">🔍</div>
-        <p>No students found</p>
+        <p>No students found for this period</p>
       </div></td></tr>`;
     return;
   }
 
   tbody.innerHTML = filtered.map((s, i) => {
-    const pct = Math.round((s.score / maxScore) * 100);
+    const pct = Math.round((s.active_seconds / maxSeconds) * 100);
     const isOnline = s.last_seen && new Date(s.last_seen) > fiveMinAgo;
     const lastSeenStr = s.last_seen ? timeAgo(new Date(s.last_seen)) : 'never';
     const rankClass = i < 3 ? 'top' : '';
+    const rankLabel = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1);
 
     return `
       <tr>
-        <td><div class="rank ${rankClass}">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '#' + (i + 1)}</div></td>
+        <td><div class="rank ${rankClass}">${rankLabel}</div></td>
         <td>
           <div class="student-name">${escHtml(s.student_name)}</div>
           <div class="student-id">${escHtml(s.student_id)}</div>
@@ -714,11 +769,13 @@ function renderTable() {
           </span>
         </td>
         <td><div class="last-seen">${lastSeenStr}</div></td>
-        <td class="score-cell">
-          <div class="score-num">${s.score}</div>
-          <div class="score-bar-wrap">
-            <div class="score-bar" style="width:${pct}%"></div>
-          </div>
+        <td class="time-cell">
+          <div class="time-num">${formatTime(s.active_seconds)}</div>
+          <div class="bar-wrap"><div class="bar" style="width:${pct}%"></div></div>
+          <div class="time-sub">${s.active_ticks} active ticks</div>
+        </td>
+        <td class="time-cell">
+          <div class="ticks-col">${s.total_ticks}</div>
         </td>
       </tr>
     `;
@@ -728,16 +785,15 @@ function renderTable() {
 // ─── STATS ────────────────────────────────────────────────
 function updateStats() {
   const fiveMinAgo = new Date(Date.now() - 5 * 60 * 1000);
-  const activeNow = allStudents.filter(s =>
-    s.last_seen && new Date(s.last_seen) > fiveMinAgo
-  ).length;
-  const scores = allStudents.map(s => s.score);
-  const avg = scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
+  const activeNow = allStudents.filter(s => s.last_seen && new Date(s.last_seen) > fiveMinAgo).length;
+  const times = allStudents.map(s => s.active_seconds);
+  const avg = times.length ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
+  const top = times.length ? Math.max(...times) : 0;
 
   document.getElementById('statTotal').textContent = allStudents.length;
   document.getElementById('statActive').textContent = activeNow;
-  document.getElementById('statTop').textContent = scores[0] ?? 0;
-  document.getElementById('statAvg').textContent = avg;
+  document.getElementById('statTop').textContent = formatTime(top);
+  document.getElementById('statAvg').textContent = formatTime(avg);
 }
 
 // ─── HELPERS ──────────────────────────────────────────────
@@ -755,14 +811,14 @@ function timeAgo(date) {
 // ─── EVENTS ───────────────────────────────────────────────
 document.getElementById('searchInput').addEventListener('input', renderTable);
 document.getElementById('classFilter').addEventListener('change', renderTable);
+document.getElementById('dateFrom').addEventListener('change', loadStudents);
+document.getElementById('dateTo').addEventListener('change', loadStudents);
 document.getElementById('refreshBtn').addEventListener('click', () => {
   document.getElementById('refreshBtn').textContent = '↻ Loading…';
   loadStudents().finally(() => {
     document.getElementById('refreshBtn').textContent = '↻ Refresh';
   });
 });
-
-// Enter key on login
 document.getElementById('passwordInput').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('loginBtn').click();
 });
